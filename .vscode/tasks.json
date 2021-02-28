@@ -1,0 +1,58 @@
+{
+        "version": "2.0.0",
+        "windows": {
+                "options": {
+                        "env": {
+                                "EMULATOR_BINARY": "unreal",
+                                "COPY_SNAPSHOT_TO": "C:\\GlobalBIN\\UnrealSpeccy\\qsave3.sna"
+                        }
+                }
+        },
+        "linux": {
+                "options": {
+                        "env": {
+                                "EMULATOR_BINARY": "xpeccy",
+                                "COPY_SNAPSHOT_TO": "/tmp/quicksave.sna"
+                        }
+                }
+        },
+        "options": {
+                "cwd": "${workspaceFolder}"
+        },
+        "type": "shell",
+        "isBackground": false,
+        "presentation": {
+                "echo": false,
+                "reveal": "silent",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true
+        },
+        "problemMatcher": "$errmatcher-sjasmplus",
+        "tasks": [
+                {
+                        "label": "build all",
+                        "command": "make",
+                        "group": {
+                                "kind": "build",
+                                "isDefault": true
+                        }
+                },
+                {
+                        "label": "part.one",
+                        "command": "make clean-part.one build/part.one.bin",
+                        "group": "build"
+                },
+                {
+                        "label": "part.two",
+                        "command": "make clean-part.two build/part.two.bin",
+                        "group": "build"
+                },
+                {
+                        "label": "part.final",
+                        "command": "make clean-part.final build/part.final.bin",
+                        "group": "build"
+                }
+        ]
+}

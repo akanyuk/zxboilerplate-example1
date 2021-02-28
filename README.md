@@ -1,2 +1,24 @@
-# zxboilerplate-advanced
- ZX Spectrum sjasmplus+vscode boilerplate with parts auto build and pack
+# zxboilerplate-example
+
+Пример ZX Spectrum проекта (демо) на основе [ZX Spectrum sjasmplus+vscode boilerplate](https://github.com/akanyuk/zxboilerplate)
+
+## Необходимые инструменты
+* [git](https://git-scm.com/)
+* [sjasmplus](https://github.com/z00m128/sjasmplus)
+* [zx7](https://spectrumcomputing.co.uk/index.php?cat=96&id=27996), `mktap`, `bintap` (ask your ZX Spectrum guru for links)
+* `make` and some Linux stuffs (for Windows you can use [cygwin](https://www.cygwin.com/))
+
+## Сборка отдельных частей демо
+Каждая часть демо находится в отдельном каталоге. В этом каталоге обязательно должен находиться файл `main.asm`, который должен выполнять два действия:
+* Cохранить бинарный файл, который в будущем будет использован для сборки всего демо
+* Сохранить снэпшот, который моржно использовать для проверки и "standalone" запуска (не обязательно). 
+
+Для удобства сборки можно завести отдельный сценарий в `tasks.json`
+
+## Сборка всего демо
+Сборка всего демо производится основным сценарием `Makefile`. При этом:
+* Компилируются все части демо, которые не были перед этим скомпилированы. Эти части должны быть перечислены в переменной **PARTS** файла `Makefile`
+* Каждая часть сжимается паковщиком **zx7** (должен быть доступен в системе)
+* Компилируется файл `src/main.asm`. Подключение, распаковку и запуск частей демо обеспечивает разработчик (см. этот пример)
+* Создается снэпшот, для удобства содержащий в имени хэш коммита.
+* Создаются полностью готовые к работе *trd* и *tap* файлы. Имя файла задается переменной **PROJECT_NAME** файла `Makefile`
