@@ -4,7 +4,7 @@ PROJECT_NAME = example1
 # Перечисление частей, которые должны собираться автоматически
 PARTS=part.one part.two part.final
 
-VER = $(shell git log --format="%h" -n 1)
+NAME_SUFFIX = $(shell date +%Y%m%d)-$(shell git log --format="%h" -n 1)
 
 ifeq ($(COPY_SNAPSHOT_TO),)
 	COPY_SNAPSHOT_TO = C:\Temp
@@ -23,7 +23,7 @@ build: $(PARTS:%=build/%.bin.zx7) ## Default: build project
 	rm -f build/.bintap-out
 
 	sjasmplus --fullpath --inc=src/. \
-		-DSNA_FILENAME=\"build/$(PROJECT_NAME)-$(VER).sna\" \
+		-DSNA_FILENAME=\"build/$(PROJECT_NAME)-$(NAME_SUFFIX).sna\" \
 		-DTRD_FILENAME=\"build/$(PROJECT_NAME).trd\" \
 		src/main.asm
 
@@ -34,7 +34,7 @@ build: $(PARTS:%=build/%.bin.zx7) ## Default: build project
 	bintap "build/page4.c" build/4.tap "4" 49152 > build/.bintap-out
 	cat build/loader.tap build/1.tap build/3.tap build/4.tap build/0.tap >> build/$(PROJECT_NAME).tap
 
-	cp --force build/$(PROJECT_NAME)-$(VER).sna $(COPY_SNAPSHOT_TO)
+	cp --force build/$(PROJECT_NAME)-$(NAME_SUFFIX).sna $(COPY_SNAPSHOT_TO)
 	@printf "\033[32mDone\033[0m\n"
 
 build/%.bin.zx7: build/%.bin
@@ -53,11 +53,11 @@ build/%.bin: clean-%
 	mkdir -p build
 
 	sjasmplus --fullpath \
-		-DSNA_FILENAME=\"$(patsubst %.bin,%,$@)-$(VER).sna\" \
+		-DSNA_FILENAME=\"$(patsubst %.bin,%,$@)-$(NAME_SUFFIX).sna\" \
 		-DBIN_FILENAME=\"$@\" \
 		$(patsubst build/%.bin,%,$@)/main.asm
 
-	cp --force $(patsubst %.bin,%,$@)-$(VER).sna $(COPY_SNAPSHOT_TO)
+	cp --force $(patsubst %.bin,%,$@)-$(NAME_SUFFIX).sna $(COPY_SNAPSHOT_TO)
 	@printf "\033[32mdone\033[0m\n\n"
 
 clean-%:
