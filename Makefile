@@ -14,7 +14,7 @@ endif
 
 all: build
 
-build: $(PARTS:%=build/%.bin.zx7) ## Default: build project
+build: $(PARTS:%=build/%.bin.zx0) ## Default: build project
 	@printf "\033[32mBuilding '$(PROJECT_NAME)'\033[0m\n"
 
 	rm -f build/*.trd
@@ -37,11 +37,11 @@ build: $(PARTS:%=build/%.bin.zx7) ## Default: build project
 	cp --force build/$(PROJECT_NAME)-$(NAME_SUFFIX).sna $(COPY_SNAPSHOT_TO)
 	@printf "\033[32mDone\033[0m\n"
 
-build/%.bin.zx7: build/%.bin
+build/%.bin.zx0: build/%.bin
 	@printf "\033[32mBuilding '$@'\033[0m\n"
 
 	rm -f $@
-	zx7 $(subst .zx7,,$@)
+	zx0 $(subst .zx0,,$@)
 	
 	@printf "\033[32mdone\033[0m\n\n"
 
