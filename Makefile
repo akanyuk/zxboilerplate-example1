@@ -22,7 +22,7 @@ build: $(PARTS:%=build/%.bin.zx0) ## Default: build project
 	rm -f build/*.c
 	rm -f build/.bintap-out
 
-	sjasmplus --fullpath --inc=src/. \
+	sjasmplus --fullpath --color=off --inc=src/. \
 		-DSNA_FILENAME=\"build/$(PROJECT_NAME)-$(NAME_SUFFIX).sna\" \
 		-DTRD_FILENAME=\"build/$(PROJECT_NAME).trd\" \
 		src/main.asm
@@ -52,7 +52,7 @@ build/%.bin: clean-%
 	@echo $@
 	mkdir -p build
 
-	sjasmplus --fullpath \
+	sjasmplus --fullpath --color=off \
 		-DSNA_FILENAME=\"$(patsubst %.bin,%,$@)-$(NAME_SUFFIX).sna\" \
 		-DBIN_FILENAME=\"$@\" \
 		$(patsubst build/%.bin,%,$@)/main.asm
