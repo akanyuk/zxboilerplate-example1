@@ -28,7 +28,7 @@ page0s
 	ld a,#be, i,a, hl,interr, (#beff),hl : im 2 : ei
 
 	; part.one: depack and initialization
-	ld a, P_PART_ONE : call setPage
+	ld a, P_PART_ONE : call common.SetPage
 	ld hl, PART_ONE_PACKED
 	ld de, A_PART_ONE
 	call common.Depack
@@ -44,7 +44,7 @@ page0s
 	ld b, 50 : halt : djnz $ -1
 
 	; part.two: depack and initialization
-	ld a, P_PART_TWO : call setPage
+	ld a, P_PART_TWO : call common.SetPage
 	ld hl, PART_TWO_PACKED
 	ld de, A_PART_TWO
 	call common.Depack
@@ -60,7 +60,7 @@ page0s
 	ld b, 50 : halt : djnz $ -1
 
 	; part.final: depack and start
-	ld a, P_PART_FINAL : call setPage
+	ld a, P_PART_FINAL : call common.SetPage
 	ld hl, PART_FINAL_PACKED
 	ld de, A_PART_FINAL
 	call common.Depack
@@ -82,10 +82,6 @@ INTS_COUNTER	equ $+1
 	exx : ex af, af'
 	pop iy,ix,hl,de,bc,af
 	ei
-	ret
-
-setPage	or %00010000
-	ld bc, #7ffd : out (c), a 
 	ret
 
 page0e	display /d, '[page 0] free: ', #ffff - $, ' (', $, ')'	
