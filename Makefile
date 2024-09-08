@@ -1,14 +1,11 @@
-# Имя проекта
-PROJECT_NAME = example1
+ifeq ($(PROJECT_NAME),)
+	PROJECT_NAME := $(shell basename "`pwd`")
+endif
 
-# Перечисление частей, которые должны собираться автоматически
+# Listing the parts that should be assembled automatically
 PARTS=part.one part.two part.final
 
 NAME_SUFFIX = $(shell date +%Y%m%d)-$(shell git log --format="%h" -n 1)
-
-ifeq ($(COPY_SNAPSHOT_TO),)
-	COPY_SNAPSHOT_TO = C:\Temp
-endif
 
 .PHONY: all build clean clean-% help
 
@@ -27,14 +24,15 @@ build: $(PARTS:%=build/%.bin.zx0) ## Default: build project
 		-DTRD_FILENAME=\"build/$(PROJECT_NAME).trd\" \
 		src/main.asm
 
-	mktap -b "$(PROJECT_NAME)" 1 <src/loader.bas >build/loader.tap
-	bintap "build/page0.c" build/0.tap "0" 24576 > build/.bintap-out
-	bintap "build/page1.c" build/1.tap "1" 49152 > build/.bintap-out
-	bintap "build/page3.c" build/3.tap "3" 49152 > build/.bintap-out
-	bintap "build/page4.c" build/4.tap "4" 49152 > build/.bintap-out
-	cat build/loader.tap build/1.tap build/3.tap build/4.tap build/0.tap >> build/$(PROJECT_NAME).tap
-
+ifneq ($(COPY_SNAPSHOT_TO),)
 	cp --force build/$(PROJECT_NAME)-$(NAME_SUFFIX).sna $(COPY_SNAPSHOT_TO)
+endif
+
+	@printf "\033[32mDone\033[0m\n"
+
+ifneq ($(EMULATOR_BINARY),)
+	$(EMULATOR_BINARY) build/$(PROJECT_NAME)-$(NAME_SUFFIX).sna
+endif
 	@printf "\033[32mDone\033[0m\n"
 
 build/%.bin.zx0: build/%.bin
@@ -55,10 +53,17 @@ build/%.bin: clean-%
 	sjasmplus --fullpath --color=off \
 		-DSNA_FILENAME=\"$(patsubst %.bin,%,$@)-$(NAME_SUFFIX).sna\" \
 		-DBIN_FILENAME=\"$@\" \
-		$(patsubst build/%.bin,%,$@)/main.asm
+		src/$(patsubst build/%.bin,%,$@)/main.asm
 
+ifneq ($(COPY_SNAPSHOT_TO),)
 	cp --force $(patsubst %.bin,%,$@)-$(NAME_SUFFIX).sna $(COPY_SNAPSHOT_TO)
+endif
+
 	@printf "\033[32mdone\033[0m\n\n"
+
+ifneq ($(EMULATOR_BINARY),)
+	$(EMULATOR_BINARY) $(patsubst %.bin,%,$@)-$(NAME_SUFFIX).sna
+endif
 
 clean-%:
 	rm -f build/$(subst clean-,,$@)*

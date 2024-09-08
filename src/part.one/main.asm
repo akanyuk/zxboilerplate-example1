@@ -5,7 +5,11 @@
 	define PART_MAIN     #7003
 
 	org #6000
-start	include "../lib/shared.asm"	
+start
+	module common
+	include "src/common/common.asm"	
+	endmodule
+
 	di : ld sp, start
 
 	xor a : out #fe, a
@@ -29,9 +33,8 @@ interr	di
 	ret
 
 	org PART_MODULE
-	module main
 	include "part.one.asm"
-	endmodule	
+
 	display /d, 'Part length: ', $ - PART_MODULE
 	display 'Part ended at: ', $
 

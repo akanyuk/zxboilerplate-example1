@@ -1,17 +1,25 @@
 	device zxspectrum128
 
 	define PART_MODULE   #7000
+	define PART_INIT     #7000
+	define PART_MAIN     #7003
 
 	org #6000
-start	include "../lib/shared.asm"	
+start	
+	module common
+	include "src/common/common.asm"	
+	endmodule
+
 	di : ld sp, start
 
 	xor a : out #fe, a
 	ld a,#5c, i,a, hl,interr, (#5cff),hl : im 2 : ei
 
-	call PART_MODULE
-
-	jr $	
+	call PART_INIT
+	
+mainLoop	call PART_MAIN
+	halt
+	jr mainLoop
 
 interr	di
 	push af,bc,de,hl,ix,iy
@@ -25,9 +33,8 @@ interr	di
 	ret
 
 	org PART_MODULE
-	module main
-	include "part.final.asm"
-	endmodule	
+	include "part.two.asm"
+
 	display /d, 'Part length: ', $ - PART_MODULE
 	display 'Part ended at: ', $
 

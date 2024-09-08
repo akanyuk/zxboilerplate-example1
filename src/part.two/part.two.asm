@@ -2,8 +2,8 @@
 
 	jp init     ; $+0   
 	jp main     ; $+3  
-init	ld a, BG_COLOR : call SetScreenAttr
-	ld hl, TEXT : ld de, #4021 : call PrintStrZ_8x8
+init	ld a, BG_COLOR : call common.SetScreenAttr
+	ld hl, TEXT : ld de, #4021 : call common.PrintStrZ_8x8
 	ret
 
 TEXT	db "Part two", 0

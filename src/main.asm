@@ -1,25 +1,29 @@
 	device zxspectrum128
 
-	; адресa частей
+	; Parts addresses
 	define A_PART_ONE #7000
 	define A_PART_TWO #7000
 	define A_PART_FINAL #7000
 
-	; страницы частей
+	; Parts pages
 	define P_PART_ONE 1
 	define P_PART_TWO 3
 	define P_PART_FINAL 4
 
-	; счетчики
+	; Counters
 	define C_PART_ONE_END 200
 	define C_PART_TWO_END 500
 
 	org #6000
-page0s	include "lib/shared.asm"	
+page0s	
+	module common
+	include "src/common/common.asm"	
+	endmodule
+	
 	di : ld sp, page0s
 	xor a : out (#fe), a 
 
-	call ClearScreen
+	call common.ClearScreen
 
 	ld a,#be, i,a, hl,interr, (#beff),hl : im 2 : ei
 
@@ -27,7 +31,7 @@ page0s	include "lib/shared.asm"
 	ld a, P_PART_ONE : call setPage
 	ld hl, PART_ONE_PACKED
 	ld de, A_PART_ONE
-	call depack
+	call common.Depack
 	call A_PART_ONE
 
 	; part.one: main
@@ -36,14 +40,14 @@ page0s	include "lib/shared.asm"
 	ld de, C_PART_ONE_END
 	ld hl, (INTS_COUNTER) : sbc hl, de : jr c, 1b
 
-	xor a : out (#fe), a : call SetScreenAttr
+	xor a : out (#fe), a : call common.SetScreenAttr
 	ld b, 50 : halt : djnz $ -1
 
 	; part.two: depack and initialization
 	ld a, P_PART_TWO : call setPage
 	ld hl, PART_TWO_PACKED
 	ld de, A_PART_TWO
-	call depack
+	call common.Depack
 	call A_PART_TWO
 
 	; part.two: main
@@ -52,14 +56,14 @@ page0s	include "lib/shared.asm"
 	ld de, C_PART_TWO_END
 	ld hl, (INTS_COUNTER) : sbc hl, de : jr c, 1b
 
-	xor a : out (#fe), a : call SetScreenAttr
+	xor a : out (#fe), a : call common.SetScreenAttr
 	ld b, 50 : halt : djnz $ -1
 
 	; part.final: depack and start
 	ld a, P_PART_FINAL : call setPage
 	ld hl, PART_FINAL_PACKED
 	ld de, A_PART_FINAL
-	call depack
+	call common.Depack
 	call A_PART_FINAL
 	jr $
 
@@ -69,7 +73,7 @@ interr	di
 	push af,bc,de,hl,ix,iy
 	ifdef _DEBUG_BORDER : ld a, #01 : out (#fe), a : endif ; debug
 
-	; счетчик интов
+	; ints counter
 INTS_COUNTER	equ $+1
 	ld hl, #0000 : inc hl : ld ($-3), hl
 
@@ -84,7 +88,6 @@ setPage	or %00010000
 	ld bc, #7ffd : out (c), a 
 	ret
 
-depack	include "lib/dzx0_standard.asm"
 page0e	display /d, '[page 0] free: ', #ffff - $, ' (', $, ')'	
 
 	define _page1 : page 1 : org #c000
@@ -99,7 +102,8 @@ page3e	display /d, '[page 3] free: ', 65536 - $, ' (', $, ')'
 
 	define _page4 : page 4 : org #c000
 page4s
-PART_FINAL_PACKED	incbin "build/part.final.bin.zx0"
+PART_FINAL_PACKED	
+	incbin "build/part.final.bin.zx0"
 page4e	display /d, '[page 4] free: ', 65536 - $, ' (', $, ')'
 
 	include "src/builder.asm"
