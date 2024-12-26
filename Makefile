@@ -28,11 +28,11 @@ ifneq ($(COPY_SNAPSHOT_TO),)
 	cp --force build/$(PROJECT_NAME)-$(NAME_SUFFIX).sna $(COPY_SNAPSHOT_TO)
 endif
 
+	@printf "\033[32mDone\033[0m\n"
+
 ifneq ($(EMULATOR_BINARY),)
 	$(EMULATOR_BINARY) build/$(PROJECT_NAME)-$(NAME_SUFFIX).sna
 endif
-
-	@printf "\033[32mDone\033[0m\n"
 
 build/%.bin.zx0: build/%.bin
 	@printf "\033[32mBuilding '$@'\033[0m\n"
